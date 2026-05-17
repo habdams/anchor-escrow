@@ -20,4 +20,10 @@ pub mod anchor_escrow {
         ctx.accounts.init_escrow(seed, receive, &ctx.bumps)?;
         ctx.account.deposit(deposit)
     }
+
+    #[instruction(discriminator = 1)]
+    pub fn take(ctx: Context<Make>) -> Result<()> {
+        ctx.accounts.deposit()?;
+        ctx.account.withdraw_and_close_vault()
+    }
 }
