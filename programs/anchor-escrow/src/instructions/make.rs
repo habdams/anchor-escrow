@@ -7,7 +7,8 @@ use anchor_spl::token_interface::{
 };
 
 #[derive(Accounts)]
-pub struct Maker<'info> {
+#[instruction(seeds: u64)]
+pub struct Make<'info> {
     #[account(mut)]
     pub maker: Signer<'info>,
 
@@ -25,7 +26,7 @@ pub struct Maker<'info> {
 		mut,
 		associated_token::mint = mint_a,
 		associated_token::authority = maker,
-		associated_token::token_program = token_prgram
+		associated_token::token_program = token_program
 	]]
     pub maker_ata_a: InterfaceAccount<'info, TokenAccount>,
 
@@ -43,7 +44,7 @@ pub struct Maker<'info> {
 		payer = maker,
 		associated_token::mint = mint_a,
 		associated_token::authority = escrow,
-		associated_token::token_program = token_prgram
+		associated_token::token_program = token_program
 	]]
     pub vault: InterfaceAccount<'info, TokenAccount>,
 
@@ -69,14 +70,14 @@ impl<'info> Make<'info> {
 
     // Deposit Token from maker to vault
     pub fn deposit(&mut self, deposit: u64) -> Result<()> {
-        let tranfer_accounts = TransferChecked {
+        let transfer_accounts = TransferChecked {
             from: self.maker_ata_a.to_account_info(),
             mint: self.mint_a.to_account_info(),
             to: self.vault.to_account_info(),
             authority: self.maker.to_account_info(),
         };
 
-        let cpi_ctx = CpiContext::new(self.token_progam.key(), transfer_accounts);
+        let cpi_ctx = CpiContext::new(self.token_program.key(), transfer_accounts);
 
         transfer_checked(cpi_ctx, deposit, self.mint_a.decimals)
     }
