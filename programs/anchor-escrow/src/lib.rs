@@ -15,7 +15,9 @@ declare_id!("F54SX1vhXwQawep1SBcKGNaTuDczJ4UXi54rRVUuu6Qr");
 pub mod anchor_escrow {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
+    #[instruction(discriminator = 0)]
+    pub fn make(ctx: Context<Make>, seed: u64, recieve: u64, deposit: u64) -> Result<()> {
+        ctx.accounts.init_escrow(seed, receive, &ctx.bumps)?;
+        ctx.account.deposit(deposit)
     }
 }
